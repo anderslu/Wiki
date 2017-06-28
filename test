@@ -1,0 +1,28 @@
+
+FROM ubuntu
+
+RUN apt-get install -y python-software-properties python python-setuptools ruby rubygems \
+	&& add-apt-repository ppa:chris-lea/node.js \
+	&& echo "deb http://us.archive.ubuntu.com/ubuntu/ precise universe" >> /etc/apt/sources.list \
+	&& apt-get update \
+	&& apt-get install -y nodejs  \
+
+	&& apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10 \
+	&& echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | tee -a /etc/apt/sources.list.d/10gen.list \
+	&& apt-get -y update \
+	&& apt-get -y install mongodb-10gen \
+
+	&& easy_install supervisor \
+	&& echo_supervisord_conf > /etc/supervisord.conf \
+	&& printf "[include]\nfiles = /var/www/Supervisorfile\n" >> /etc/supervisord.conf \
+
+ADD . /var/www
+
+RUN cd /var/www ; npm install 
+
+CMD ["/usr/local/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"] 
+
+tomcat
+jdk
+mongodb
+springmvc
